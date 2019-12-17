@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RideKid.com</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="peerjs.min.js"></script>
+  </head>
+  <body>
+    <select id="voiceSelect"></select>
+     <div id='container'>
+      <div id='logo'>
+        <img style='float: left' src='logo.png' width='180px' height='128px' />
+        <div style='float: right;' id='actions'>
+          <div id='account_management' class='relative'>
+            <div class="form-group">
+              <input type='text' class="form-control" name='email' id='email' placeholder='Email' />
+              <input type='password' class="form-control" name='password' id='password' placeholder='Password' />
+            </div>
+              <a class='button left' id='login_btn'>Login</a>
+              <a class='button left' id='new_account_btn'>New User</a>
+          </div>
+          <div id='begin'>
+          <a class='start_button' id='drive'>Drive</a><br>
+           <a class='start_button' id='ride'>Ride</a><br>
+         </div>
+          <a id='create_express_account' href='' target="_blank"><img src='/connect.png' /></a>
+           <div id='voice_commands'>
+             <a id="call_ride" class='button left'>Call Ride</a><br />
+             <a id="call_passenger" class='button left'>Call Passenger</a>
+          </div>
+          <div id='active_call'>
+            <video id='my-video'></video>
+            <video id='their-video'></video>
+          </div>
+          <script src="https://js.stripe.com/v3"></script>
+          <a class='button' style='' id="checkout-button-sku_FrufDI50hwfeDz" role="link">Pay</a>
+          <div id="error-message"></div>
+          <script type='text/javascript'>
+          function checkout(button_id,sku_id) {
+             var checkoutButton = document.getElementById(button_id);
+              checkoutButton.addEventListener('click', function () {
+               // socket.send(JSON.stringify({type: "create_ride", data: Array(window.coordinates.coords['longitude'], window.coordinates.coords['latitude']) }));
+                stripe.redirectToCheckout({
+                  items: [{sku: sku_id, quantity: 1}],
+                  successUrl: 'https://ridekid.com/',
+                  cancelUrl: 'https://ridekid.com/',
+                  clientReferenceId: window.ride_id,
+                }).then(function (result) {
+                  if (result.error) {
+                    var displayError = document.getElementById('error-message');
+                    displayError.textContent = result.error.message;
+                  }
+                });
+              });
+          }
+              var stripe = Stripe('pk_test_N169270SSEHLP7Ggyr5o6uBB');
+
+              checkout('checkout-button-sku_FrugNSirmT0KLk','sku_FvGsw4Eolahzan');     
+          </script>
+          <div id="payment-request-button"> </div>
+        </div>
+      </div>
+      <div id="map"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+
+    <script type='text/javascript'>
+    hearandspeak();
+ function initMap() {
+        window.map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 38.59428171, lng: -94.17281057},
+          zoom: 8,
+          mapTypeControl: false,
+          fullscreenControl:false,
+           streetViewControl: false,
+                    styles:[
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#523735"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#c9b2a6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#dcd2be"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#ae9e90"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.natural",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#93817c"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#a5b076"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#447530"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#fdfcf8"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f8c967"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#e9bc62"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e98d58"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#db8555"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#806b63"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8f7d77"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#b9d3c2"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#92998d"
+      }
+    ]
+  }
+]      });
+
+
+
+
+     function driver(lat,lng,drop_directions,destination_lat,destination_lng) {
+        var image = 'ridekid.png';
+        var ridekid = new google.maps.Marker({position: {lat,lng}, map: map, icon: image }); 
+        ridekid.setMap(map);
+        var infowindow = new google.maps.InfoWindow({
+          content: drop_directions
+        });
+
+        ridekid.addListener('click', function() {
+          infowindow.open(map, ridekid);
+          calculateAndDisplayRoute();
+        });
+      }
+      var transitLayer = new google.maps.TransitLayer();
+      transitLayer.setMap(map);
+
+      function rider(lat,lng,drop_directions,destination_lat,destination_lng) {
+        var image = 'rider.png';
+        var rider = new google.maps.Marker({position: {lat,lng}, map: map, icon: image }); 
+        rider.setMap(map);
+        var infowindow = new google.maps.InfoWindow({
+          content: drop_directions
+        });
+
+        rider.addListener('click', function() {
+          infowindow.open(map, rider);
+          calculateAndDisplayRoute(lat,lng,drop_directions,destination_lat,destination_lng);
+        });
+      }
+      socket.onopen = function(e) {
+        socket.send(JSON.stringify({type: "new_ride", data: []}));
+        socket.send(JSON.stringify({type: "new_driver", data: []}));
+      }
+      
+      socket.onmessage = function(event) {
+        handleMessage(event);
+      }
+      function handleMessage(message) {
+          var message_array = $.parseJSON(message.data);  
+          var message_type = message_array[message_array.length-1].type;
+          switch (message_type) {
+              case 'new_ride':
+              message_array.forEach(function(element, i) {
+                  if (element.lat == undefined) return;
+                  var lng = parseFloat(element.lng);
+                  var lat = parseFloat(element.lat);
+                  var destination_lat = element.destination_lat;
+                  var destination_lng = element.destination_lng;
+                  var drop_directions = element.drop_directions; 
+                  rider(lat,lng,drop_directions,destination_lat,destination_lng);
+              });
+              break;
+              case 'new_driver':
+                message_array.forEach(function(element, i) {
+                   if (element.lat == undefined) return;
+                   var lng = parseFloat(element.lng);
+                   var lat = parseFloat(element.lat);
+                   driver(lat,lng);
+                });
+              break;
+              case 'ride_sent':
+                window.ride_id = message_array[0];
+              break;
+          }
+      }
+      socket.onclose = function(event) {
+        if (event.wasClean) {
+          console.log("Connection closed cleanly, code=${event.code} reason=${event.reason}");
+        } else {
+          console.log('Connection died');
+          location.reload();
+        }
+      };
+      
+      socket.onerror = function(error) {
+        console.log("{error.message}");
+      };
+ 
+      function calculateAndDisplayRoute(lat,lng,drop_directions,destination_lat,destination_lng) {
+          var directionsService = new google.maps.DirectionsService();
+          var directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
+           directionsRenderer.setOptions({
+            polylineOptions: {
+              strokeColor: '#72b352'
+            }
+          });
+          directionsRenderer.setMap(window.map);
+          directionsService.route({
+                origin: lat + " " + lng,
+                destination: destination_lat + " " + destination_lng,
+                travelMode: 'DRIVING'
+              },
+              function(response, status) {
+                if (status === 'OK') {
+                  directionsRenderer.setDirections(response);
+                  var myRoute = response.routes[0];
+                  var direction_step = '';
+                  var payment = 0.00;
+                  var miles = 0;
+                  for (var i = 0; i < myRoute.legs[0].steps.length; i++) {
+                     payment += Math.ceil((myRoute.legs[0].steps[i].distance.value / 1600)) * 1.50;
+                    miles += Math.ceil((myRoute.legs[0].steps[i].distance.value / 1600));
+                    direction_step += myRoute.legs[0].steps[i].instructions+"<br />";
+                    
+                 }
+                  $("#directions").append("<li>" + direction_step + "</li>");
+                } else {
+                  console.log('Directions request failed due to ' + status);
+                }
+                console.log(payment);
+                $("#ride_cost").html("Ride Cost: $" + payment + " Miles:" + miles);
+            });
+        }
+        trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(window.map);
+      }
+    window.driving = false;
+    function drive() {
+        hearandspeak();
+          /* EMERGENCY FIX("/csrf", function (response) { */
+        $("#create_express_account").show();
+        $("#create_express_account").attr("href", "https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://workfar.com/bank_confirm&response_type=code&client_id=ca_BgYL4ZS7RT7YfS3XaYwNPksYolIghe0J&scope=read_write&state=EMERGEYFIX");
+    }
+      function ride() {
+        hearandspeak();
+        $("#checkout-button-sku_FrufDI50hwfeDz").show();
+      }
+      function driver(lat,lng,drop_directions,destination_lat,destination_lng) {
+        var image = 'ridekid.png';
+        var ridekid = new google.maps.Marker({position: {lat,lng}, map: map, icon: image }); 
+        ridekid.setMap(map);
+        var infowindow = new google.maps.InfoWindow({
+          content: drop_directions
+        });
+
+        ridekid.addListener('click', function() {
+          infowindow.open(map, ridekid);
+          calculateAndDisplayRoute();
+        });
+      }
+      function rider(lat,lng,drop_directions,destination_lat,destination_lng) {
+        var image = 'rider.png';
+        var rider = new google.maps.Marker({position: {lat,lng}, map: map, icon: image }); 
+        rider.setMap(map);
+        var infowindow = new google.maps.InfoWindow({
+          content: drop_directions
+        });
+
+        rider.addListener('click', function() {
+          infowindow.open(map, rider);
+          calculateAndDisplayRoute(lat,lng,drop_directions,destination_lat,destination_lng);
+        });
+      }
+      function getPosition(coordinates) {
+          window.coordinates = coordinates;
+          window.map.setCenter(new google.maps.LatLng(window.coordinates.coords['latitude'],window.coordinates.coords['longitude']));
+          window.map.setZoom(18); 
+          if (window.mode == "drive")
+            driver(window.coordinates.coords['latitude'],window.coordinates.coords['longitude'],"Teddy Murray");
+          else if (window.mode =="rider")
+            rider(window.coordinates.coords['latitude'],window.coordinates.coords['longitude'],"Teddy Murray");
+          socket.send(JSON.stringify({ type: "update_ridekid", data: Array(window.coordinates.coords['longitude'],window.coordinates.coords['latitude']) }));
+      }
+      function login() {
+        socket.send(JSON.stringify({type: "login", data: Array( $("#email").val(), $("#password").val(),window.coordinates.coords['longitude'],window.coordinates.coords['latitude']) }));
+      }
+      function new_account() {
+        socket.send(JSON.stringify({type: "create_ridekid", data: Array( $("#email").val(), $("#password").val(), window.coordinates.coords['longitude'],window.coordinates.coords['latitude']) }));
+      }
+      function voice_commands() {
+            $("#voice_commands").show();
+            $("#call_ride").click(function() {
+                call_peer();
+            });
+            $("#call_passenger").click(function() {
+                call_peer();
+            });
+      }
+      $("#drive").click(function() {
+        $("#account_management").show();
+        $("#begin").hide();
+        navigator.geolocation.watchPosition(getPosition);
+        window.mode = "drive";
+        $("#login_btn").click(function() {
+            $("#account_management").hide();
+            voice_commands();
+            login();
+            drive();
+        });
+        $("#new_account_btn").click(function() {
+           $("#account_management").hide();
+           voice_commands();
+           new_account();
+           drive();
+        });
+      });
+      $("#ride").click(function() {
+        $("#begin").hide();
+        $("#account_management").show();
+        window.mode = "rider";
+        navigator.geolocation.watchPosition(getPosition);
+        $("#login_btn").click(function() {
+          $("#account_management").hide();
+            login();
+            ride();
+        });
+        $("#new_account_btn").click(function() {
+          $("#account_management").hide();
+            voice_commands();
+            new_account();
+            ride();
+        });
+      });
+      window.socket = new WebSocket("wss://ridekid.com:1337");
+      
+      window.map;
+function hearandspeak() {
+  var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+  var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+  var synth = window.speechSynthesis;
+  var recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  var voices = synth.getVoices();
+
+  recognition.onresult = function(event) {
+    var last = event.results.length - 1;
+    var transcript = event.results[last][0].transcript;
+    var voice_commands = [];
+    voice_commands = transcript.split(" ");
+    for (var i = 0, L = voice_commands.length ; i < L; i++)
+        voice_commands[i]=voice_commands[i].toLowerCase();
+
+    console.log(voice_commands);
+      if (voice_commands[0] == "call" && (voice_commands[1] == "ride" || voice_commands[1] == "passenger") ) {
+        var response_voice = "Calling";
+        call_peer();
+      } else if ( voice_commands[0] == 'next' && voice_commands[1] == "passenger") 
+        var response_voice = "Accepting the nearest Passenger.";
+
+      var utterThis = new SpeechSynthesisUtterance(response_voice);
+      utterThis.lang =  "en-GB";
+      synth.speak(utterThis);
+    }
+    recognition.start();
+}
+window.peer = new Peer({host: 'ridekid.com', port: '7777',path: '/', secure: 'true', debug: true}); 
+window.peer.on('open', function(event) {
+  window.peer.listAllPeers(function(peers) {
+    window.peer_id = peers[0];
+    });
+});
+
+  window.peer.on('call', function(call) {
+    call.answer(window.localStream);
+  });
+  window.peer.on('error', function(err) {
+    console.debug(err);
+  });
+
+function call_peer() { 
+  $("#active_call").show();
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+  navigator.getUserMedia({ audio: true, video: true },function(stream) {
+   var video = document.getElementById('my-video');
+   video.volume = 0;
+   try {
+      $("#my-video").prop('src',window.URL.createObjectURL(stream));
+      
+   } catch(error) {
+      video.srcObject = stream;
+   } 
+   
+   window.localStream = stream;
+   window.existingCall = window.peer.call(window.peer_id,window.localStream);
+  window.existingCall.on('stream', function(stream) { 
+    var video = document.getElementById('their-video');
+     video.volume = 0;
+    try {
+      $("#their-video").prop('src',window.URL.createObjectURL(stream));
+    } catch(error) {
+      video.srcObject = stream;
+    }
+    
+      $("#their-video").prop('onloadedmetadata',function(e) {video.play();});
+    });
+   $("#my-video").prop('onloadedmetadata',function(e) {video.play();});
+  },function(err) {
+   alert("The following error occurred: " + err.name);
+  });
+
+}
+    </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFd9yv75r0dyoGjiJBiz2EYzlLTkoZc2c&callback=initMap" async defer></script>
+        <div id='ride_cost'>0.00</div>
+    <ul id='directions'> 
+    </ul>
+  </body>
+</html>

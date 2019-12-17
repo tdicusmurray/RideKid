@@ -1,0 +1,107 @@
+.hidden {
+    display: none;
+}
+#directions { background-color: #FFFFFF; margin: 0 auto; width:375px !important; height: 300px; overflow: scroll; }
+#map {
+    height: 350px;
+    width: 375px;
+    margin-top: 128px;
+}
+#ride_cost { margin: 0 auto; background-color:#FFFFFF;  width:375px; font-size:24px; color:#FF0000;}
+video { width: 192px; }
+#voice_commands { display:none; margin-left: 40px;}
+#checkout-button-sku_FrufDI50hwfeDz { display:none; }
+.relative { position: relative; }
+.left { float: left; }
+.right { float: right; }
+#account_management { display: none; margin-left:50px; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('background.png');
+    background-repeat: repeat;
+}
+#logo {
+    position: absolute;
+    z-index: 2;
+    left: 0px;
+    top: 0px;
+    height:100px;
+    width: 350px;
+}
+#actions {
+    position:absolute;
+    z-index:2px;
+    left: 140px;
+    width: 230px;
+    top: 10px;
+}
+#container {
+    position: relative;
+    margin: 0 auto;
+    width: 375px;
+    height: 478px;
+    border: 1px solid #000000;
+    background-color: #FFFFFF;
+}
+#begin {
+    margin-left:35px;
+}
+.start_button {
+    width: 180px;
+    box-shadow: 0px 10px 14px -7px #3e7327;
+    background: linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+    background-color: #77b55a;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff !important;
+    font-family: Arial;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 13px 16px;
+    padding-left: 70px !important;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #5b8a3c;
+    margin-bottom:10px;
+}
+.start_button:hover {
+    background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+    background-color:#72b352;
+}
+.start_button:active {
+    position:relative;
+    top:1px;
+}
+.form-group { margin-bottom:0px !important;}
+.button {
+    width: 85px;
+    box-shadow: 0px 10px 14px -7px #3e7327;
+    background: linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+    background-color: #77b55a;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff !important;
+    font-family: Arial;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #5b8a3c;
+    padding: 10px;
+}
+.button:hover {
+    background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+    background-color:#72b352;
+}
+.button:active {
+    position:relative;
+    top:1px;
+}
+#create_express_account {
+    display: none;
+    margin-left: 40px;
+}
+#active_call { display: none;}
+#voiceSelect { display: none;}

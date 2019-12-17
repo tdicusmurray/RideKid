@@ -1,0 +1,13 @@
+CREATE OR REPLACE FUNCTION new_ride_function()
+  RETURNS trigger AS $$
+DECLARE
+BEGIN
+  PERFORM pg_notify(row_to_json(NEW)::text);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER new_ride
+  AFTER INSERT ON prices
+  FOR EACH ROW
+  EXECUTE PROCEDURE new_ride_function();

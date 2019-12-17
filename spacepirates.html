@@ -1,0 +1,19 @@
+<div id='text'>
+</div>
+
+<script type='text/javascript'>
+  var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+  var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+  var recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = function(event) {
+    var last = event.results.length - 1;
+    var transcript = event.results[last][0].transcript;
+    document.getElementById("text").innerHTML += transcript + "<br />";
+  }
+  recognition.start();
+</script>
